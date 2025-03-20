@@ -17,6 +17,7 @@ namespace ByteFormatter
 
     public class ByteFormatter
     {
+        // 定义字典，用于存储预置类型的处理器
         public static readonly Dictionary<Type, object> PRIMITIVE_PROCESSORS = new Dictionary<Type, object>()
         {
             { typeof(int), new IntProcessor() },
@@ -30,6 +31,7 @@ namespace ByteFormatter
             { typeof(string), new StringProcessor() },
         };
 
+        // 根据类型获取对应的处理器
         public static Processor<T> GetProcessor<T>()
         {
             return (Processor<T>) GetProcessor(typeof(T));
@@ -37,7 +39,8 @@ namespace ByteFormatter
 
         public static Processor GetProcessor(Type type)
         {
-            if (PRIMITIVE_PROCESSORS.TryGetValue(type, out object value)) // 在预置类型的字典中，直接读取
+            // 在预置类型的字典中，直接读取
+            if (PRIMITIVE_PROCESSORS.TryGetValue(type, out object value))
             {
                 return (Processor) value;
             }

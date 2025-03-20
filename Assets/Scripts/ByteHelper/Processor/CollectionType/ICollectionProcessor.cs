@@ -11,9 +11,9 @@ namespace ByteFormatter
     using System;
     using System.Collections.Generic;
 
-    public class IDictionaryProcessor<TDictionary, TKey, TValue> : Processor<TDictionary> where TDictionary : IDictionary<TKey, TValue>
+    public class ICollectionProcessor<TCollection, TValue> : Processor<TCollection> where TCollection : ICollection<TValue>
     {
-        public override int GetBytesLength(TDictionary value)
+        public override int GetBytesLength(TCollection value)
         {
             var length = sizeof(int);
             foreach (var item in value)
@@ -23,13 +23,8 @@ namespace ByteFormatter
             return length;
         }
 
-        public override int Write(byte[] bytes, TDictionary value, int index)
+        public override int Write(byte[] bytes, TCollection value, int index)
         {
-            if (value == null)
-            {
-                throw new ArgumentNullException(nameof(value));
-            }
-
             int count = value.Count;
 
             // 写长度
@@ -46,24 +41,18 @@ namespace ByteFormatter
             return index;
         }
 
-        public override int Read(byte[] bytes, int index, out TDictionary value)
+        public override int Read(byte[] bytes, int index, out TCollection value)
         {
-            if (bytes == null)
-            {
-                throw new ArgumentNullException(nameof(bytes));
-            }
-
             // 1. 读取长度（元素数量）
             int length = BitConverter.ToInt32(bytes, index);
-            index += sizeof(int);
+             index += sizeof(int);
 
             // 2. 读取内容
-            value = (TDictionary) Activator.CreateInstance(typeof(TDictionary));
+            value = (TCollection) Activator.CreateInstance(typeof(TCollection));
             for (int i = 0; i < length; i++)
             {
-                index = ByteFormatter.Read(bytes, index, typeof(KeyValuePair<TKey, TValue>), out var item);
-                var pair = (KeyValuePair<TKey, TValue>) item;
-                value.Add(pair.Key, pair.Value);
+                index = ByteFormatter.Read(bytes, index, typeof(TValue), out var item);
+                value.Add((TValue) item);
             }
 
             return index;

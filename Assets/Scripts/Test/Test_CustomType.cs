@@ -18,15 +18,21 @@ namespace Test
     [Serializable] [ByteSerializable]
     public class CustomData
     {
-        public int        Id;
-        public string     Name;
-        public List<int>  List = new List<int>();
-        public NestedData NestedData; // Supports nested types
+        public  int        Id;
+        private string     _name;
+        public  List<int>  List = new List<int>();
+        public  NestedData NestedData; // Supports nested types
+
+        public string Name
+        {
+            get => _name;
+            set => _name = value;
+        }
 
         public override string ToString()
         {
             return $"{{ Id: {Id}, " +
-                   $"Name: {Name}, " +
+                   $"Name: {_name}, " +
                    $"List: [{string.Join(", ", List)}], " +
                    $"NestedData: {NestedData} }}";
         }
@@ -56,6 +62,8 @@ namespace Test
 
         private void Start()
         {
+            CustomData.Name = "zheliku";
+            
             SerializeData();
 
             Text.text = "Serialize Data Success!";
